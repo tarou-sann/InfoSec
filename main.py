@@ -1,10 +1,7 @@
 import tkinter as tk
 from tkinter import ttk, scrolledtext, messagebox
-import caesarCipher
 import playfairCipher
 import railFenceCipher
-import vigenereCipher
-import xorCipher
 
 class CryptoApp:
     def __init__(self, root):
@@ -19,11 +16,8 @@ class CryptoApp:
         
         # Key format descriptions
         self.key_formats = {
-            "Caesar Cipher": "Enter a number (e.g., 3)",
             "Playfair Cipher": "Enter a word or phrase",
-            "Rail Fence Cipher": "Enter a number > 1 (e.g., 3)",
-            "Vigenère Cipher": "Enter a word (letters only)",
-            "XOR Cipher": "Enter any text"
+            "Rail Fence Cipher": "Enter a number > 1 (e.g., 3)"
         }
         
         self.create_widgets()
@@ -54,13 +48,13 @@ class CryptoApp:
         # Algorithm selection
         ttk.Label(input_frame, text="Select algorithm:").grid(row=1, column=0, sticky=tk.W, pady=5)
         self.algorithm = tk.StringVar()
-        algorithms = ["Caesar Cipher", "Playfair Cipher", "Rail Fence Cipher", "Vigenère Cipher", "XOR Cipher"]
+        algorithms = ["Playfair Cipher", "Rail Fence Cipher"]
         algorithm_menu = ttk.Combobox(input_frame, textvariable=self.algorithm, values=algorithms, width=20, state="readonly")
         algorithm_menu.grid(row=1, column=1, sticky=tk.W, padx=5, pady=5)
         algorithm_menu.current(0)
         algorithm_menu.bind("<<ComboboxSelected>>", self.update_key_format)
         
-        # Key input with format hint - using a consistent label now
+        # Key input with format hint
         ttk.Label(input_frame, text="Enter key:").grid(row=2, column=0, sticky=tk.W, pady=5)
         self.key = tk.StringVar()
         self.key_entry = ttk.Entry(input_frame, textvariable=self.key, width=40)
@@ -68,7 +62,7 @@ class CryptoApp:
         
         # Key format instruction
         self.key_format_var = tk.StringVar()
-        self.key_format_var.set(self.key_formats["Caesar Cipher"])
+        self.key_format_var.set(self.key_formats["Playfair Cipher"])
         self.key_format_label = ttk.Label(input_frame, textvariable=self.key_format_var, 
                                        font=("Arial", 9, "italic"), foreground="gray")
         self.key_format_label.grid(row=3, column=1, sticky=tk.W, padx=5)
@@ -126,16 +120,10 @@ class CryptoApp:
         self.output_text.insert(tk.END, f"Key: {key}\n\n")
         
         try:
-            if algorithm == "Caesar Cipher":
-                result, steps = caesarCipher.encrypt(plaintext, key, True)
-            elif algorithm == "Playfair Cipher":
+            if algorithm == "Playfair Cipher":
                 result, steps = playfairCipher.encrypt(plaintext, key, True)
             elif algorithm == "Rail Fence Cipher":
                 result, steps = railFenceCipher.encrypt(plaintext, key, True)
-            elif algorithm == "Vigenère Cipher":
-                result, steps = vigenereCipher.encrypt(plaintext, key, True)
-            elif algorithm == "XOR Cipher":
-                result, steps = xorCipher.encrypt(plaintext, key, True)
                 
             self.output_text.insert(tk.END, steps)
             self.output_text.insert(tk.END, f"\nFinal ciphertext: {result}\n")
@@ -167,10 +155,7 @@ class CryptoApp:
         self.output_text.insert(tk.END, f"Key: {key}\n\n")
         
         try:
-            if algorithm == "Caesar Cipher":
-                result, steps = caesarCipher.decrypt(ciphertext, key, True)
-                self.result_text = result
-            elif algorithm == "Playfair Cipher":
+            if algorithm == "Playfair Cipher":
                 result, steps, cleaned_result = playfairCipher.decrypt(ciphertext, key, True)
                 # Store the cleaned result for copying
                 self.result_text = cleaned_result
@@ -178,12 +163,6 @@ class CryptoApp:
                 steps += "\nNote: The result shown in the copy area is the version with X's removed."
             elif algorithm == "Rail Fence Cipher":
                 result, steps = railFenceCipher.decrypt(ciphertext, key, True)
-                self.result_text = result
-            elif algorithm == "Vigenère Cipher":
-                result, steps = vigenereCipher.decrypt(ciphertext, key, True)
-                self.result_text = result
-            elif algorithm == "XOR Cipher":
-                result, steps = xorCipher.decrypt(ciphertext, key, True)
                 self.result_text = result
                 
             self.output_text.insert(tk.END, steps)
